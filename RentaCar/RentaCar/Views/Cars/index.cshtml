@@ -1,0 +1,36 @@
+﻿@model IEnumerable<RentaCar.Models.Cars>
+
+@{
+    ViewBag.Title = "Cars";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Cars</h2>
+<a class="">@Html.ActionLink("Add New Car", "New", "Cars", null, new { @class = "btn btn-primary" })</a>
+<br />
+<p></p>
+@if (!Model.Any())
+{
+    <p>We don't have any Cars yet.</p>
+}
+else
+{
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Car</th>
+                <th>Car Type</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var car in Model)
+            {
+                <tr>
+                    <td>@Html.ActionLink(car.Name, "Details", "Cars", new { id = car.Id }, null)</td>
+                    <td>@car.CarType.Name</td>
+                    <td>@Html.ActionLink("Edit", "Edit", "Cars", new { id = car.Id }, null)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

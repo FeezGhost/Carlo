@@ -1,0 +1,40 @@
+﻿@model RentaCar.ViewModels.NewCarViewModel
+@{
+    /**/
+
+    /**/
+
+    ViewBag.Title = Model.Title;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@Model.Title</h2>
+
+@using (Html.BeginForm("Create", "Cars"))
+{
+    @Html.ValidationSummary(true, "Please fix the errors below:", new { @class="field-validation-error" })
+    
+    <div class="form-group">
+        @Html.LabelFor(m => m.Car.CarTypeId)
+        @Html.DropDownListFor(m => m.Car.CarTypeId, new SelectList(Model.CarTypes, "Id", "Name"), "Select Car Type For Car", new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Car.CarTypeId)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Car.Name)
+        @Html.TextBoxFor(m => m.Car.Name, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Car.Name)
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Car.Instore)
+        @Html.TextBoxFor(m => m.Car.Instore, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Car.Instore)
+    </div>
+
+
+    //costcarInDB
+
+    @Html.HiddenFor(m => m.Car.Id)
+    <button type="submit" class="btn btn-primary">Save</button>
+    @Html.AntiForgeryToken()
+}
