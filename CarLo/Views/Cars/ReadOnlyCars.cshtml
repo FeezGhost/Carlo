@@ -1,0 +1,46 @@
+﻿@model IEnumerable<CarLo.Models.Cars>
+
+@{
+    ViewBag.Title = "Cars";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Cars</h2>
+<br />
+<p></p>
+    <table id="cars" class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Car</th>
+                <th>Car Type</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+
+            let table = $("#cars").DataTable({
+                ajax: {
+                    url: "/api/cars",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "name",
+                        render: function (data, type, car) {
+                            return "<a href='/cars/details/" + car.id + "'>" + car.name + "</a>";
+                        }
+                    },
+                    {
+                        data: "carType.name"
+                    }
+                ]
+            });
+        });
+    </script>
+}

@@ -1,0 +1,119 @@
+﻿@model dynamic
+@{
+    ViewBag.Title = "New Rental Form";
+}
+<h2>New Rental Form</h2>
+<form id="newRental">
+    <div class="form-group">
+        <label>Customer</label>
+        <div class="tt-container">
+            <input id="customer" name="customer" data-rule-validCustomer="true" required type="text" value="" class="form-control" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Car</label>
+        <div class="tt-container">
+            <input id="car" name="car" data-rule-atLeastOnecar="true" type="text" value="" class="form-control" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4 col-sm-4">
+            <ul id="cars" class="list-group"></ul>
+        </div>
+    </div>
+    <button class="btn btn-primary">Submit</button>
+</form>
+@section scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(document).ready(function () {
+
+            var vm = {
+                IdCustomer: "",
+                IdCars: []
+            };
+
+            var customers = new Bloodhound({
+                datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                remote: {
+                    url: '/api/customers/?query=%QUERY',
+                    wildcard: '%QUERY'
+                }
+            });
+
+            $('#customer').typeahead({
+                highlight: true
+            }, {
+                    name: 'customers',
+                    display: 'name',
+                    source: customers,
+                    limit: 1000
+                }).on("typeahead:select", function (e, customer) {
+                    vm.IdCustomer = customer.id;
+                });
+
+            var cars = new Bloodhound({
+                datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                remote: {
+                    url: '/api/cars?query=%QUERY',
+                    wildcard: '%QUERY'
+                }
+            });
+
+            $('#car').typeahead({
+                minLength: 3,
+                highlight: true
+            }, {
+                    name: 'cars',
+                    display: 'name',
+                    source: cars,
+
+                    limit: 1000
+                }).on("typeahead:select", function (e, car) {
+                    $("#cars").append("<li class='list-group-item'>" + car.name + "</li>");
+
+                    $("#car").typeahead("val", "");
+
+                    vm.IdCars.push(car.id);
+                });
+
+            $.validator.addMethod("validCustomer", function () {
+                return vm.IdCustomer && vm.IdCustomer !== 0;
+            }, "Please select a valid customer.");
+
+            $.validator.addMethod("atLeastOnecar", function () {
+                return vm.IdCars.length > 0;
+            }, "Please select at least one car.");
+
+            var validator = $("#newRental").validate({
+                submitHandler: function () {
+                    $.ajax({
+                        url: "/api/carRental",
+                        method: "post",
+                        data: vm
+                    })
+                        .done(function () {
+                            toastr.success("Rentals successfully recorded.");
+
+                            $("#customer").typeahead("val", "");
+                            $("#car").typeahead("val", "");
+                            $("#cars").empty();
+
+                            vm = { IdCars: [] };
+
+                            validator.resetForm();
+                        })
+                        .fail(function () {
+
+                            toastr.error("Something unexpected happened.");
+                        });
+
+                    return false;
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,23 @@
+﻿@model CarLo.ViewModels.RandomCarViewModel
+@{
+    ViewBag.Title = "Random";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{ 
+    var popularclass = Model.Customers.Count > 0 ? "popular" : null;
+}
+<h1 class="@popularclass">@Model.Car.Name</h1>
+@if(Model.Customers.Count==0)
+{
+    <text>No Customer Has Rented A Car </text>
+}
+else
+{
+    <ul>
+        @foreach (var customer in Model.Customers)
+        {
+            <li>@customer.Name</li>
+        }
+    </ul>
+}
+
